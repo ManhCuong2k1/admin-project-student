@@ -1,6 +1,6 @@
 <template>
     <el-table
-    :data="tableData" class="w-full">
+    :data="dataTable" class="w-full">
         <el-table-column
             type="index"
             width="50">
@@ -16,11 +16,11 @@
         </el-table-column>
         <el-table-column label="Action" fixed="right" width="220">
             <template slot-scope="scope">
-                <!-- <el-button
-                    :type="scope.row.deleted_at == null ? '' : 'danger'"
+                <el-button
+                    :type="scope.row.deletedAt == null ? '' : 'danger'"
                     icon="el-icon-remove-outline"
-                    @click="switchDeleteBook(scope.row.id, scope.row.deleted_at)"
-                /> -->
+                    @click="switchDeleteTeacher(scope.row.ID, scope.row.deletedAt)"
+                />
                 <div class="inline-block">
                     <router-link :to="`/admin/book/${scope.row.id}/edit`">
                         <el-button icon="el-icon-edit" />
@@ -32,6 +32,9 @@
 </template>
 
 <script>
+    import { findIndex } from 'lodash';
+    import { mapState } from 'vuex';
+    import cloneDeep from 'lodash/cloneDeep';
     export default {
         props: {
             tableData: {
@@ -39,5 +42,33 @@
                 require: true,
             },
         },
+        data() {
+            return {
+                dataTable: cloneDeep(this.tableData),
+                loadding: false,
+            };
+        },
+        computed: {
+            ...mapState('teacher', ['teacherDetail']),
+        },
+        methods: {
+            switchDeleteTeacher(id, deletedAt) {
+                if(deletedAt == null) {
+                    this.deleteTeacher(id);
+                } else {
+                    this.restoreTeacher(id);
+                }
+            },
+            async deleteTeacher(id) {
+                await this.$store.dispatch('teacher/delete', id);
+                const index = findIndex(this.dataTable, { ID: id });
+                this.dataTable.splice(index, 1, { ...index, ...this.teacherDetail });
+            },
+            async restoreTeacher(id) {
+                await this.$store.dispatch('teacher/restore', id);
+                const index = findIndex(this.dataTable, { ID: id });
+                this.dataTable.splice(index, 1, { ...index, ...this.teacherDetail });
+            }
+        }
     }
 </script>

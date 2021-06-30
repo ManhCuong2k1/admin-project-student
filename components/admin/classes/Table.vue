@@ -1,6 +1,6 @@
 <template>
     <el-table
-    :data="tableData" class="w-full">
+    :data="dataTable" class="w-full">
         <el-table-column
             type="index"
             width="50">
@@ -22,9 +22,7 @@
                     @click="switchDeleteClass(scope.row.ID, scope.row.deletedAt)"
                 />
                 <div class="inline-block">
-                    <router-link :to="`/admin/book/${scope.row.id}/edit`">
-                        <el-button icon="el-icon-edit" />
-                    </router-link>
+                    <el-button icon="el-icon-edit" @click="changeValue(scope.row.ID)"/>
                 </div>
             </template>
         </el-table-column>
@@ -32,7 +30,9 @@
 </template>
 
 <script>
+    import { findIndex } from 'lodash';
     import { mapState } from 'vuex';
+    import cloneDeep from 'lodash/cloneDeep';
     export default {
         props: {
             tableData: {
@@ -40,8 +40,14 @@
                 require: true,
             },
         },
+        data() {
+            return {
+                dataTable: cloneDeep(this.tableData),
+                loadding: false,
+            };
+        },
         computed: {
-            ...mapState('class', ['class']),
+            ...mapState('class', ['classDetail']),
         },
         methods: {
             switchDeleteClass(id, deletedAt) {
@@ -53,13 +59,16 @@
             },
             async deleteClass(id) {
                 await this.$store.dispatch('class/delete', id);
-                // console.log(this.class);
-                // const newItem = this.class;
-                // const index = findIndex(this.tableData, { id });
-                // this.tableData.splice(index, 1, { ...index, ...newItem });
+                const index = findIndex(this.dataTable, { ID: id });
+                this.dataTable.splice(index, 1, { ...index, ...this.classDetail });
             },
             async restoreClass(id) {
                 await this.$store.dispatch('class/restore', id);
+                const index = findIndex(this.dataTable, { ID: id });
+                this.dataTable.splice(index, 1, { ...index, ...this.classDetail });
+            },
+            changeValue(id) {
+                this.$emit('updateClass', id);
             }
         }
     }

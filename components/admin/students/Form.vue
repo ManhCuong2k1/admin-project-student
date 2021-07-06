@@ -20,23 +20,34 @@
     </el-form>
 </template>
 <script>
+  import cloneDeep from 'lodash/cloneDeep';
+
+  const modelForm = {
+    name: '',
+    classID: ''
+  };
   export default {
     props: {
       dataClass: {
           type: Array,Object,
           require: true,
       },
+      dataStudent: {
+          type: Array,
+          require: true,
+      },
     },
     data() {
+      const ruleForm = this.dataStudent ? cloneDeep(this.dataStudent) : cloneDeep(modelForm);
       return {
-        ruleForm: {
-          name: '',
-          classID : '',
-        },
+        ruleForm,
         rules: {
           name: [
             { required: true, message: 'Không được để trống!', trigger: 'blur' },
             { min: 3, max: 50, message: 'Length should be 3 to 5', trigger: 'blur' }
+          ],
+          class: [
+            { required: true, message: 'Không được để trống!', trigger: 'blur' }
           ]
         }
       };

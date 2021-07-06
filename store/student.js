@@ -1,6 +1,6 @@
 export const state = () => ({
     students: [],
-    studentDetail: null
+    studentDetail: null,
 });
 
 export const mutations = {
@@ -18,7 +18,7 @@ export const actions = {
         commit('setStudents', res.data);
     },
     async getDetail({ commit }, id) {
-        const res = await this.$axios.get(`http://localhost:8080/api/students/${id}`);
+        const res = await this.$axios.get(`http://localhost:8080/api/students/detail/${id}`);
         commit('setStudentDetail', res.data);
     },
     async create({ commit }, payload) {

@@ -18,7 +18,7 @@ export const actions = {
         commit('setClasses', res.data);
     },
     async getDetail({ commit }, id) {
-        const res = await this.$axios.get(`http://localhost:8080/api/class/${id}`);
+        const res = await this.$axios.get(`http://localhost:8080/api/class/detail/${id}`);
         commit('setClassDetail', res.data);
     },
     async create({ commit }, payload) {
@@ -36,5 +36,9 @@ export const actions = {
     async update({ commit }, payload) {
         await this.$axios.put(`http://localhost:8080/api/class/${payload.id}`, payload.data);
         commit('setClassDetail', payload);
+    },
+    async search({ commit }, params) {
+        const res = await this.$axios.get('http://localhost:8080/api/class/search', {params});
+        commit('setClasses', res.data);
     },
 };

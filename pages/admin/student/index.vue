@@ -16,8 +16,8 @@
             <TableStudent :table-data="students" @updateStudent="updateValue"/>
         </div>
         <div v-if="isActive" class="fixed z-50 bg-white p-10 shadow-2xl	rounded-lg top-40 left h-80">
-            <span class="el-icon-close top-4 right-4 absolute cursor-pointer" @click="create()"></span>
-            <PopupCreate @submitForm="createForm" :data-class="classes"/>
+            <span class="el-icon-close top-4 right-4 absolute cursor-pointer" @click="close()"></span>
+            <PopupCreate @submitForm="createForm" :data-class="classes" :data-student="studentDetail"/>
         </div>
     </div>
 </template>
@@ -43,22 +43,33 @@ export default {
         }
     },
     computed: {
-        ...mapState('student', ['students']),
+        ...mapState('student', ['students', 'studentDetail']),
         ...mapState('class', ['classes']),
     },
     methods: {
         create() {
-            this.isActive = !this.isActive;
+            this.isActive = true;
+        },
+        close() {
+            this.isActive = false;
+            this.$router.go('/admin/student');
         },
         async createForm(form) {
             try {
-                await this.$store.dispatch('student/create', form);
-                console.log(form);
+                if(this.studentDetail == null) {
+                    await this.$store.dispatch('student/create', form);
+                } else {
+                    await this.$store.dispatch('student/update', {id: this.studentDetail.ID, data: form});
+                }
                 this.$router.go('/admin/student');
                 this.isActive = false;
             } catch (error) {
                 console.log(error);
             }
+        },
+        async updateValue(id) {
+            await this.$store.dispatch('student/getDetail', id);
+            this.isActive = true;
         }
     }
 }

@@ -27,9 +27,7 @@
                     @click="switchDeleteStudent(scope.row.ID, scope.row.deletedAt)"
                 />
                 <div class="inline-block">
-                    <router-link :to="`/admin/book/${scope.row.id}/edit`">
-                        <el-button icon="el-icon-edit" />
-                    </router-link>
+                    <el-button icon="el-icon-edit" @click="changeValue(scope.row.ID)"/>
                 </div>
             </template>
         </el-table-column>
@@ -73,6 +71,9 @@
                 await this.$store.dispatch('student/restore', id);
                 const index = findIndex(this.dataTable, { ID: id });
                 this.dataTable.splice(index, 1, { ...index, ...this.studentDetail });
+            },
+            changeValue(id) {
+                this.$emit('updateStudent', id);
             }
         }
     }

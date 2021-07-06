@@ -17,6 +17,10 @@ export const actions = {
         const res = await this.$axios.get('http://localhost:8080/api/teacher');
         commit('setTeachers', res.data);
     },
+    async getDetail({ commit }, id) {
+        const res = await this.$axios.get(`http://localhost:8080/api/teacher/detail/${id}`);
+        commit('setTeacherDetail', res.data);
+    },
     async create({ commit }, payload) {
         await this.$axios.post(`http://localhost:8080/api/teacher`, payload);
         commit('setTeacherDetail', payload);
@@ -28,5 +32,9 @@ export const actions = {
     async restore({ commit }, id) {
         const res = await this.$axios.post(`http://localhost:8080/api/teacher/restore/${id}`);
         commit('setTeacherDetail', res.data);
+    },
+    async update({ commit }, payload) {
+        await this.$axios.put(`http://localhost:8080/api/teacher/${payload.id}`, payload.data);
+        commit('setTeacherDetail', payload);
     },
 };

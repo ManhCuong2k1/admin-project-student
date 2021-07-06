@@ -22,9 +22,7 @@
                     @click="switchDeleteTeacher(scope.row.ID, scope.row.deletedAt)"
                 />
                 <div class="inline-block">
-                    <router-link :to="`/admin/book/${scope.row.id}/edit`">
-                        <el-button icon="el-icon-edit" />
-                    </router-link>
+                    <el-button icon="el-icon-edit" @click="changeValue(scope.row.ID)"/>
                 </div>
             </template>
         </el-table-column>
@@ -35,6 +33,7 @@
     import { findIndex } from 'lodash';
     import { mapState } from 'vuex';
     import cloneDeep from 'lodash/cloneDeep';
+
     export default {
         props: {
             tableData: {
@@ -68,6 +67,9 @@
                 await this.$store.dispatch('teacher/restore', id);
                 const index = findIndex(this.dataTable, { ID: id });
                 this.dataTable.splice(index, 1, { ...index, ...this.teacherDetail });
+            },
+            changeValue(id) {
+                this.$emit('updateTeacher', id);
             }
         }
     }

@@ -13,11 +13,11 @@
                     </el-form-item>
                 </el-form>
             </div>
-            <TableTeacher :table-data="teachers"/>
+            <TableTeacher :table-data="teachers" @updateTeacher="updateValue"/>
         </div>
         <div v-if="isActive" class="fixed z-50 bg-white p-10 shadow-2xl	rounded-lg top-40 left h-80">
-            <span class="el-icon-close top-4 right-4 absolute cursor-pointer" @click="create()"></span>
-            <PopupCreate @submitForm="createForm" />
+            <span class="el-icon-close top-4 right-4 absolute cursor-pointer" @click="close()"></span>
+            <PopupCreate @submitForm="createForm" :teacher-data="teacherDetail"/>
         </div>
     </div>
 </template>
@@ -42,20 +42,32 @@ export default {
         }
     },
     computed: {
-        ...mapState('teacher', ['teachers']),
+        ...mapState('teacher', ['teachers', 'teacherDetail']),
     },
     methods: {
         create() {
-            this.isActive = !this.isActive;
+            this.isActive = true;
+        },
+        close() {
+            this.isActive = false;
+            this.$router.go('/admin/teacher');
         },
         async createForm(form) {
             try {
-                await this.$store.dispatch('teacher/create', form);
+                if(this.teacherDetail == null) {
+                    await this.$store.dispatch('teacher/create', form);
+                } else {
+                    await this.$store.dispatch('teacher/update', {id: this.teacherDetail.ID, data: form});
+                }
                 this.$router.go('/admin/teacher');
                 this.isActive = false;
             } catch (error) {
                 console.log(error);
             }
+        },
+        async updateValue(id) {
+            await this.$store.dispatch('teacher/getDetail', id);
+            this.isActive = true;
         }
     }
 }
